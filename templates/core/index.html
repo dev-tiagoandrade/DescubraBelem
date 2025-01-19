@@ -1,0 +1,333 @@
+{% extends 'bases.html' %}
+{% load static %}
+{% block title %}Sistema AS{% endblock %}
+{% block style %}
+<style>
+.image-styled {
+    object-fit: cover; /* Faz com que a imagem seja cortada para preencher o espaço */
+    height: 200px;
+}
+.text-truncate-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+/* Efeito de hover para o botão */
+.favoritar-btn:hover {
+    background-color: rgba(40, 167, 69, 0.7) !important; /* Verde com opacidade no hover */
+    color: white !important; /* Ícone branco */
+}
+
+.favoritar-btn:hover .ki-heart {
+    color: white !important; /* Ícone branco no hover */
+}
+</style>
+{% endblock %}
+{% block content %}
+<div class="d-flex flex-column flex-column-fluid">
+    <!-- Main content -->
+    <div id="kt_app_content_container" class="app-container container-xxl">
+        <form method="post">
+            {% csrf_token %}
+            <!--begin::Card-->
+            <div class="card card-flush card-px-0 bg-transparent shadow-none border-0 mb-7">
+                <!--begin::Card body-->
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <!--begin::Compact form-->
+                    <div class="d-flex align-items-center">
+                        <!--begin::Input group-->
+                        <div class="position-relative w-md-700px">
+                            <div class="form-control form-control-solid form-control-lg card bg-white">
+                                    <!-- Input Field -->
+                                    <input type="text" class="form-control form-control-transparent"
+                                           name="busca" value="{{busca}}" placeholder="Para onde vamos hoje?">
+
+                                    <!-- Search Button -->
+                                    <button type="submit"
+                                            class="btn btn-flush position-absolute end-0 top-50 translate-middle-y px-6">
+                                        <i class="ki-duotone ki-magnifier fs-1"><span class="path1"></span><span class="path2"></span></i>
+                                    </button>
+                                </div>
+                        </div>
+                        <!--end::Input group-->
+                    </div>
+                    <!--end::Compact form-->
+                </div>
+                <!--end::Card body-->
+            </div>
+            <!--end::Card-->
+        </form>
+
+        <div class="card card-flush card-px-0 bg-transparent shadow-none border-0">
+
+            <!--begin::Row-->
+            <div class="card-header pt-7">
+                <!--begin::Title-->
+                <h3 class="card-title align-items-start flex-column">
+                    <span class="card-label fw-bold text-gray-900">{% if busca %}Veja o que encontramos para "{{busca}}"{% else %}Você pode gostar{% endif %}</span>
+
+                    <span class="text-gray-500 pt-2 fw-semibold fs-6">{% if busca %}{{pontos.count}} resultado{% if pontos.count != 1 %}s{%endif%}{% else %}Veja os roteiros que separamos especialmente para você!{% endif %}</span>
+                </h3>
+                <!--end::Title-->
+                {% if busca %}
+                <!--begin::Toolbar-->
+                <div class="card-toolbar">
+                    <a href="{% url 'index' %}" class="btn btn-sm btn-light-danger" data-bs-toggle="tooltip" data-bs-dismiss="click" data-bs-custom-class="tooltip-inverse" data-bs-original-title="Logistics App is coming soon" data-kt-initialized="1">Limpar</a>
+                </div>
+                <!--end::Toolbar-->
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <div class="row g-6">
+                {% for ponto in pontos %}
+                <!--begin::Col-->
+                <div class="col-md-4">
+                    <!--begin::Card-->
+                    <div class="card h-100 card-rounded position-relative">
+                        <!--begin::Image-->
+                        <div class="card-img-top position-relative overflow-hidden">
+                            {% with 'assets/media/svg/avatars/blank.svg' as default_avatar %}
+                                {% if ponto.foto %}
+                                    <img src="{{ ponto.foto.url }}" alt="{{ ponto.nome }}" class="image-styled w-100">
+                                {% else %}
+                                    <img src="{% static default_avatar %}" alt="Avatar padrão" class="image-styled w-100">
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                        <!--end::Image-->
+
+                        <!--begin::Card Body-->
+                        <div class="card-body p-4 d-flex flex-column">
+                            <!--begin::Subtitle-->
+                            <div class="fw-semibold fs-7 text-gray-500 mb-3">
+                                Roteiro favorito de {{ ponto.num_favoritos }} pessoa{% if ponto.favoritos.count != 1 %}s{% endif %}!
+                            </div>
+                            <!--end::Subtitle-->
+                            <!--begin::Title-->
+                            <a href="{{ ponto.site }}" class="fs-5 fw-bold text-gray-900 text-hover-primary d-block mb-2">
+                                {{ ponto.nome }}
+                            </a>
+                            <!--end::Title-->
+
+                            <!--begin::Subtitle-->
+                            <div class="fw-semibold fs-6 text-gray-600">
+                                {{ ponto.get_categoria_display }} de {{ ponto.cidade }}
+                            </div>
+                            <!--end::Subtitle-->
+
+                            <!--begin::Description-->
+                            <div class="fw-semibold fs-6 text-gray-700 text-truncate-3 mt-3">
+                                {{ ponto.descricao }}
+                            </div>
+                            <!--end::Description-->
+                        </div>
+                        <!--end::Card Body-->
+                        <!-- Botão de Favoritar -->
+                        <button
+                            class="btn btn-icon btn-sm favoritar-btn position-absolute top-0 end-0 m-2
+                            {% if ponto.is_favorito %}btn-primary bg-opacity-50{% else %}btn-light bg-opacity-50{% endif %}"
+                            data-ponto-id="{{ ponto.id }}">
+                            <!-- Ícone de Coração -->
+                            <i class="ki-solid ki-heart fs-1
+                            {% if ponto.is_favorito %}text-primary{% else %}text-gray-600{% endif %}"></i>
+                        </button>
+                    </div>
+                    <!--end::Card-->
+                </div>
+
+                <!--end::Col-->
+                {% endfor %}
+            </div>
+            </div>
+        </div>
+        {% if praias %}
+        <div class="card card-flush card-px-0 bg-transparent shadow-none border-0">
+            <!--begin::Row-->
+            <div class="card-header pt-7">
+                <!--begin::Title-->
+                <h3 class="card-title align-items-start flex-column">
+                    <span class="card-label fw-bold text-gray-800">Precisando Relaxar?</span>
+                    <span class="text-gray-500 pt-2 fw-semibold fs-6">Veja as opções de praias perto de você!</span>
+                </h3>
+                <!--end::Title-->
+                <!--begin::Toolbar-->
+                <div class="card-toolbar">
+                    <a href="#" class="btn btn-sm btn-light" data-bs-toggle="tooltip" data-bs-dismiss="click" data-bs-custom-class="tooltip-inverse" data-bs-original-title="Logistics App is coming soon" data-kt-initialized="1">Ver Tudo</a>
+                </div>
+                <!--end::Toolbar-->
+            </div>
+            <div class="card-body">
+                <div class="row g-6">
+                {% for praia in praias %}
+                <!--begin::Col-->
+                <div class="col-md-4">
+                    <!--begin::Card-->
+                    <div class="card h-100 card-rounded">
+                        <!--begin::Image-->
+                        <div class="card-img-top position-relative overflow-hidden ">
+                            {% with 'assets/media/svg/avatars/blank.svg' as default_avatar %}
+                                {% if praia.foto %}
+                                <img src="{{ praia.foto.url }}" alt="{{ praia.nome }}" class="image-styled w-100">
+                                {% else %}
+                                <img src="{% static default_avatar %}" alt="Avatar padrão" class="image-styled w-100">
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                        <!--end::Image-->
+
+                        <!--begin::Card Body-->
+                        <div class="card-body p-4 d-flex flex-column">
+                            <!--begin::Subtitle-->
+                            <div class="fw-semibold fs-7 text-gray-500 mb-3">
+                                Roteiro favorito de {{praia.num_favoritos}} pessoa{%if praia.favoritos.count != 1%}s{% endif %}!
+                            </div>
+                            <!--end::Subtitle-->
+                            <!--begin::Title-->
+                            <a href="{{ praia.site }}" class="fs-5 fw-bold text-gray-900 text-hover-primary d-block mb-2">
+                                {{ praia.nome }}
+                            </a>
+                            <!--end::Title-->
+
+                            <!--begin::Subtitle-->
+                            <div class="fw-semibold fs-6 text-gray-600">
+                                {{ praia.get_categoria_display }} de {{ praia.cidade }}
+                            </div>
+                            <!--end::Subtitle-->
+
+                            <!--begin::Description-->
+                            <div class="fw-semibold fs-6 text-gray-700 text-truncate-3 mt-3">
+                                {{ praia.descricao }}
+                            </div>
+                            <!--end::Description-->
+                        </div>
+                        <!--end::Card Body-->
+                        <!-- Botão de Favoritar -->
+                        <button
+                            class="btn btn-icon btn-sm favoritar-btn position-absolute top-0 end-0 m-2
+                            {% if praia.is_favorito %}btn-primary bg-opacity-50{% else %}btn-light bg-opacity-50{% endif %}"
+                            data-ponto-id="{{ praia.id }}">
+                            <!-- Ícone de Coração -->
+                            <i class="ki-solid ki-heart fs-1
+                            {% if praia.is_favorito %}text-primary{% else %}text-gray-600{% endif %}"></i>
+                        </button>
+                    </div>
+                    <!--end::Card-->
+                </div>
+                <!--end::Col-->
+                {% endfor %}
+            </div>
+            </div>
+        </div>
+        {% endif %}
+        {% if cafes %}
+        <div class="card card-flush card-px-0 bg-transparent shadow-none border-0">
+            <!--begin::Row-->
+            <div class="card-header pt-7">
+                <!--begin::Title-->
+                <h3 class="card-title align-items-start flex-column">
+                    <span class="card-label fw-bold text-gray-800">Nada melhor que um bom café!</span>
+                    <span class="text-gray-500 pt-2 fw-semibold fs-6">Veja as melhores opções de cafeterias em Belém e região!</span>
+                </h3>
+                <!--end::Title-->
+                <!--begin::Toolbar-->
+                <div class="card-toolbar">
+                    <a href="#" class="btn btn-sm btn-light" data-bs-toggle="tooltip" data-bs-dismiss="click" data-bs-custom-class="tooltip-inverse" data-bs-original-title="Logistics App is coming soon" data-kt-initialized="1">Ver Tudo</a>
+                </div>
+                <!--end::Toolbar-->
+            </div>
+            <div class="card-body">
+                <div class="row g-6">
+                {% for cafe in cafes %}
+                <!--begin::Col-->
+                <div class="col-md-4">
+                    <!--begin::Card-->
+                    <div class="card h-100 card-rounded">
+                        <!--begin::Image-->
+                        <div class="card-img-top position-relative overflow-hidden ">
+                            {% with 'assets/media/svg/avatars/blank.svg' as default_avatar %}
+                                {% if cafe.foto %}
+                                <img src="{{ cafe.foto.url }}" alt="{{ cafe.nome }}" class="image-styled w-100">
+                                {% else %}
+                                <img src="{% static default_avatar %}" alt="Avatar padrão" class="image-styled w-100">
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                        <!--end::Image-->
+
+                        <!--begin::Card Body-->
+                        <div class="card-body p-4 d-flex flex-column">
+                            <!--begin::Subtitle-->
+                            <div class="fw-semibold fs-7 text-gray-500 mb-3">
+                                Roteiro favorito de {{cafe.num_favoritos}} pessoa{%if cafe.favoritos.count != 1%}s{% endif %}!
+                            </div>
+                            <!--end::Subtitle-->
+                            <!--begin::Title-->
+                            <a href="{{ cafe.site }}" class="fs-5 fw-bold text-gray-900 text-hover-primary d-block mb-2">
+                                {{ cafe.nome }}
+                            </a>
+                            <!--end::Title-->
+
+                            <!--begin::Subtitle-->
+                            <div class="fw-semibold fs-6 text-gray-600">
+                                {{ cafe.get_categoria_display }} de {{ cafe.cidade }}
+                            </div>
+                            <!--end::Subtitle-->
+
+                            <!--begin::Description-->
+                            <div class="fw-semibold fs-6 text-gray-700 text-truncate-3 mt-3">
+                                {{ cafe.descricao }}
+                            </div>
+                            <!--end::Description-->
+                        </div>
+                        <!-- Botão de Favoritar -->
+                        <button
+                            class="btn btn-icon btn-sm favoritar-btn position-absolute top-0 end-0 m-2
+                            {% if cafe.is_favorito %}btn-primary bg-opacity-50{% else %}btn-light bg-opacity-50{% endif %}"
+                            data-ponto-id="{{ cafe.id }}">
+                            <!-- Ícone de Coração -->
+                            <i class="ki-solid ki-heart fs-1
+                            {% if cafe.is_favorito %}text-primary{% else %}text-gray-600{% endif %}"></i>
+                        </button>
+                        <!--end::Card Body-->
+                    </div>
+                    <!--end::Card-->
+                </div>
+                <!--end::Col-->
+                {% endfor %}
+            </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    <!-- end::Main content -->
+</div>
+{% endblock %}
+{% block script %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.favoritar-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const pontoId = this.getAttribute('data-ponto-id');
+                fetch(`/favoritar/${pontoId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    location.reload(); // Recarregar a página para atualizar o estado
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,183 @@
+{% extends 'bases.html' %}
+{% load static %}
+{% block title %}Categorias{% endblock %}
+{% block style %}
+<style>
+.image-styled {
+    object-fit: cover; /* Faz com que a imagem seja cortada para preencher o espaço */
+    height: 200px;
+}
+.text-truncate-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+/* Efeito de hover para o botão */
+.favoritar-btn:hover {
+    background-color: rgba(40, 167, 69, 0.7) !important; /* Verde com opacidade no hover */
+    color: white !important; /* Ícone branco */
+}
+
+.favoritar-btn:hover .ki-heart {
+    color: white !important; /* Ícone branco no hover */
+}
+</style>
+{% endblock %}
+{% block content %}
+<div class="d-flex flex-column flex-column-fluid">
+    <div id="kt_app_toolbar" class="app-toolbar  py-3 py-lg-6 ">
+
+            <!--begin::Toolbar container-->
+        <div id="kt_app_toolbar_container" class="app-container  container-xxl d-flex flex-stack ">
+
+            <!--begin::Page title-->
+            <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3 ">
+                <!--begin::Title-->
+                <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">
+                    Categorias
+                        </h1>
+                <!--end::Title-->
+
+
+                    <!--begin::Breadcrumb-->
+                    <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+                                        <!--begin::Item-->
+                                                <li class="breadcrumb-item text-muted">
+                                                                <a href="{% url 'index' %}" class="text-muted text-hover-primary">
+                                            Explorar                            </a>
+                                                        </li>
+                                            <!--end::Item-->
+                                                <!--begin::Item-->
+                                <li class="breadcrumb-item">
+                                    <span class="bullet bg-gray-500 w-5px h-2px"></span>
+                                </li>
+                                <!--end::Item-->
+
+                                        <!--begin::Item-->
+                                                <li class="breadcrumb-item text-muted">
+                                                                Categorias                                            </li>
+                                            <!--end::Item-->
+                                                <!--begin::Item-->
+                                </ul>
+                    <!--end::Breadcrumb-->
+                </div>
+            <!--end::Page title-->
+        </div>
+        <!--end::Toolbar container-->
+    </div>
+    <!-- Main content -->
+    <div id="kt_app_content_container" class="app-container container-xxl">
+
+        {% for categoria, pontos in pontos_por_categoria.items %}
+        <div class="card card-flush card-px-0 bg-transparent shadow-none border-0">
+            {% if pontos %}
+            <!--begin::Row-->
+            <div class="card-header pt-7">
+                <!--begin::Title-->
+                <h3 class="card-title align-items-start flex-column">
+                    <span class="card-label fw-bold text-gray-900">{{categoria}}</span>
+                </h3>
+                <!--begin::Toolbar-->
+                <div class="card-toolbar">
+                    <a href="{% url 'index' %}" class="btn btn-sm btn-light" data-bs-toggle="tooltip" data-bs-dismiss="click" data-bs-custom-class="tooltip-inverse" data-bs-original-title="Logistics App is coming soon" data-kt-initialized="1">Ver tudo</a>
+                </div>
+                <!--end::Toolbar-->
+                <!--end::Title-->
+            </div>
+            <div class="card-body">
+                <div class="row g-6">
+                {% for ponto in pontos %}
+                <!--begin::Col-->
+                <div class="col-md-4">
+                    <!--begin::Card-->
+                    <div class="card h-100 card-rounded">
+                        <!--begin::Image-->
+                        <div class="card-img-top position-relative overflow-hidden ">
+                            {% with 'assets/media/svg/avatars/blank.svg' as default_avatar %}
+                                {% if ponto.foto %}
+                                <img src="{{ ponto.foto.url }}" alt="{{ ponto.nome }}" class="image-styled w-100">
+                                {% else %}
+                                <img src="{% static default_avatar %}" alt="Avatar padrão" class="image-styled w-100">
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                        <!--end::Image-->
+
+                        <!--begin::Card Body-->
+                        <div class="card-body p-4 d-flex flex-column">
+                            <!--begin::Subtitle-->
+                            <div class="fw-semibold fs-7 text-gray-500 mb-3">
+                                Roteiro favorito de {{ponto.num_favoritos}}pessoa{%if ponto.favoritos.count != 1%}s{% endif %}!
+                            </div>
+                            <!--end::Subtitle-->
+                            <!--begin::Title-->
+                            <a href="{{ ponto.site }}" class="fs-5 fw-bold text-gray-900 text-hover-primary d-block mb-2">
+                                {{ ponto.nome }}
+                            </a>
+                            <!--end::Title-->
+
+                            <!--begin::Subtitle-->
+                            <div class="fw-semibold fs-6 text-gray-600">
+                                {{ ponto.get_categoria_display }} de {{ ponto.cidade }}
+                            </div>
+                            <!--end::Subtitle-->
+
+                            <!--begin::Description-->
+                            <div class="fw-semibold fs-6 text-gray-700 text-truncate-3 mt-3">
+                                {{ ponto.descricao }}
+                            </div>
+                            <!--end::Description-->
+                        </div>
+                        <!--end::Card Body-->
+                        <!-- Botão de Favoritar -->
+                        <button
+                            class="btn btn-icon btn-sm favoritar-btn position-absolute top-0 end-0 m-2
+                            {% if ponto.is_favorito %}btn-primary bg-opacity-50{% else %}btn-light bg-opacity-50{% endif %}"
+                            data-ponto-id="{{ ponto.id }}">
+                            <!-- Ícone de Coração -->
+                            <i class="ki-solid ki-heart fs-1
+                            {% if ponto.is_favorito %}text-primary{% else %}text-gray-600{% endif %}"></i>
+                        </button>
+                    </div>
+                    <!--end::Card-->
+                </div>
+                <!--end::Col-->
+                {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    <!-- end::Main content -->
+</div>
+{% endblock %}
+{% block script %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.favoritar-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const pontoId = this.getAttribute('data-ponto-id');
+                fetch(`/favoritar/${pontoId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    location.reload(); // Recarregar a página para atualizar o estado
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}
