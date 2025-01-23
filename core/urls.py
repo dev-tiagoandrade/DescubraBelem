@@ -8,6 +8,10 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(next_page='login'), name='logout'),
     path('singup/', SingUpView.as_view(), name='singup'),
     
+    path('<int:pk>/', DetailUsuario.as_view(), name='usuario'),
+    path('editar/<int:pk>/', EditUsuario.as_view(), name='edit-usuario'),
+    path('delete/<int:pk>/', DeleteUsuario.as_view(), name='delete-usuario'),
+    
     path('', Index.as_view(), name='index'),
     path('add_local/', AddLocal.as_view(), name='add_local'),
     path('categorias/', Categorias.as_view(), name='categorias'),

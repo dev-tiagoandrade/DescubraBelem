@@ -1,0 +1,230 @@
+{% extends 'bases.html' %}
+{% load static %}
+{% block title %}Editar Ponto Turístico | Descubra Belém{% endblock %}
+{% block style %}
+<style>
+
+    .image-input-empty {
+        {%if %}
+        background-image: url("{% static 'assets/media/svg/avatars/blank.svg' %} ");
+    }
+
+    [data-bs-theme="dark"] .image-input-empty {
+        background-image: url("{% static 'assets/media/svg/avatars/blank-dark.svg' %} ");
+    }
+</style>
+{% endblock %}
+{% block content %}
+
+<!-- Título da Página -->
+<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
+    <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
+        <!--begin::Page title-->
+        <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+            <!--begin::Title-->
+            <h1 class="page-heading d-flex fw-bold fs-3 flex-column justify-content-center my-0">Novo Ponto Turístico</h1>
+            <!--end::Title-->
+            <!--begin::Breadcrumb-->
+            <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+                <!--begin::Item-->
+                <li class="breadcrumb-item text-muted">
+                    <a href="index.html" class="text-muted text-hover-primary">Início</a>
+                </li>
+                <!--end::Item-->
+                <!--begin::Item-->
+                <li class="breadcrumb-item">
+                    <span class="bullet bg-gray-500 w-5px h-2px"></span>
+                </li>
+                <!--end::Item-->
+                <!--begin::Item-->
+                <li class="breadcrumb-item text-muted">
+                    Ponto Turísticos
+                </li>
+                <!--end::Item-->
+            </ul>
+            <!--end::Breadcrumb-->
+        </div>
+        <!--end::Page title-->
+    </div>
+</div>
+<!--end::Título da Página-->
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-primary">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <!-- MENSAGENS DE ERRO -->
+                {% if messages %}
+                    <div class="card-body">
+                        {% for message in messages %}
+                            <div class="alert alert-danger alert-{{ message.tags }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div class="card-body">
+                    <!--begin::Image input-->
+                    <div class="image-input image-input-empty" data-kt-image-input="true">
+                        <!--begin::Image preview wrapper-->
+                        <div class="image-input-wrapper w-300px h-200px"></div>
+                        <!--end::Image preview wrapper-->
+
+                        <!--begin::Edit button-->
+                        <label class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"
+                        data-kt-image-input-action="change" data-bs-toggle="tooltip" data-bs-dismiss="click" title="Adicionar Foto">
+                            <i class="ki-duotone ki-pencil fs-6"><span class="path1"></span><span class="path2"></span></i>
+
+                            <!--begin::Inputs-->
+                            <input type="file" name="foto" accept=".png, .jpg, .jpeg" />
+                            <input type="hidden" name="avatar_remove" />
+                            <!--end::Inputs-->
+                        </label>
+                        <!--end::Edit button-->
+
+                        <!--begin::Cancel button-->
+                        <span class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"
+                        data-kt-image-input-action="cancel"
+                        data-bs-toggle="tooltip"
+                        data-bs-dismiss="click"
+                        title="Cancel avatar">
+                            <i class="ki-outline ki-cross fs-3"></i>
+                        </span>
+                        <!--end::Cancel button-->
+
+                        <!--begin::Remove button-->
+                        <span class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"
+                        data-kt-image-input-action="remove"
+                        data-bs-toggle="tooltip"
+                        data-bs-dismiss="click"
+                        title="Remove avatar">
+                            <i class="ki-outline ki-cross fs-3"></i>
+                        </span>
+                        <!--end::Remove button-->
+                    </div>
+                    <!--end::Image input-->
+                </div>
+                <div class="card-body">
+                    <h4 class="card-title mb-10">Dados Gerais</h4>
+                    <div class="col-md-12 mb-10">
+                        <label for="id_nome" class="form-label required">{{ form.nome.label }}</label>
+                        {{ form.nome }}
+                        {% if form.nome.errors %}
+                            <div class="invalid-feedback" style="display:block;">{{ form.nome.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-12 mb-10">
+                        <label for="id_categoria" class="form-label required">{{ form.categoria.label }}</label>
+                        {{ form.categoria }}
+                        {% if form.categoria.errors %}
+                            <div class="invalid-feedback" style="display:block;">{{ form.categoria.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-12 mb-10">
+                        <label for="id_descricao" class="form-label required">{{ form.descricao.label }}</label>
+                        {{ form.descricao }}
+                        {% if form.descricao.errors %}
+                            <div class="invalid-feedback" style="display:block;">{{ form.descricao.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-12 mb-10">
+                        <label for="id_site" class="form-label">{{ form.site.label }}</label>
+                        {{ form.site }}
+                        {% if form.site.errors %}
+                            <div class="invalid-feedback" style="display:block;">{{ form.site.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h4 class="card-title mb-10">Endereço</h4>
+                    <div class="col-md-12 mb-10">
+                        <label for="id_logradouro" class="form-label required">{{ form.logradouro.label }}</label>
+                        {{ form.logradouro }}
+                        {% if form.logradouro.errors %}
+                            <div class="invalid-feedback" style="display:block;">{{ form.logradouro.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-12 mb-10">
+                        <label for="id_cep" class="form-label required">{{ form.cep.label }}</label>
+                        {{ form.cep }}
+                        {% if form.cep.errors %}
+                            <div class="invalid-feedback" style="display:block;">{{ form.cep.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-12 mb-10">
+                        <label for="id_bairro" class="form-label required">{{ form.bairro.label }}</label>
+                        {{ form.bairro }}
+                        {% if form.bairro.errors %}
+                            <div class="invalid-feedback" style="display:block;">{{ form.bairro.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-12 mb-10">
+                        <label for="id_cidade" class="form-label required">{{ form.cidade.label }}</label>
+                        {{ form.cidade }}
+                        {% if form.cidade.errors %}
+                            <div class="invalid-feedback" style="display:block;">{{ form.cidade.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-12 mb-10">
+                        <label for="id_uf" class="form-label required">{{ form.uf.label }}</label>
+                        {{ form.uf }}
+                        {% if form.uf.errors %}
+                            <div class="invalid-feedback" style="display:block;">{{ form.uf.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-12 mb-10">
+                        <label for="id_numero" class="form-label">{{ form.numero.label }}</label>
+                        {{ form.numero }}
+                        {% if form.numero.errors %}
+                            <div class="invalid-feedback" style="display:block;">{{ form.numero.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+
+                <!-- BOTÕES -->
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-primary">Avançar</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</section>
+<!-- /.content -->
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'assets/js/custom/documentation/base/modal.js' %}"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        Inputmask({
+            "mask" : "99999-999",
+            "placeholder": "********"
+        }).mask("#id_cep");
+    });
+</script> <!-- Input Mask-->
+<script type="text/javascript">
+    // Preenchimento automático do endereço a partir do CEP
+        $("#id_cep").focusout(function () {
+            $.ajax({
+                url: 'https://viacep.com.br/ws/' + $(this).val() + '/json/',
+                dataType: 'json',
+                success: function (resposta) {
+                    if (resposta.logradouro && resposta.logradouro.trim() !== "") {
+                        $("#id_logradouro").val(resposta.logradouro);
+                    } else {
+                        $("#id_logradouro").focus();
+                    }
+                    $("#id_bairro").val(resposta.bairro);
+                    $("#id_cidade").val(resposta.localidade);
+                    $("#id_uf").val(resposta.uf);
+                    $("#id_numero").focus();
+                }
+            });
+        });
+</script> <!-- Prenchimento do Endereço pelo CEP -->
+{% endblock %}

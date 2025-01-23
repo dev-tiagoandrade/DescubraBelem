@@ -15,6 +15,11 @@ class AddUsuarioForm(Form):
     password = CharField(widget=PasswordInput, required=True, label="Senha")
 
 
+class EditUsuarioForm(ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'username',  'is_staff', 'is_superuser']
+
 class AddLocalForm(ModelForm):
     nome = CharField(
         widget=TextInput(attrs={

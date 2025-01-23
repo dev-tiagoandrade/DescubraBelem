@@ -128,9 +128,101 @@
                                     <!--end:Menu item-->
                                 <!--end:Row-->
                                 </div>
+
                                 <!--end::Menu-->
+
                             </div>
                             <!--end::Menu wrapper-->
+                                <!--begin::User menu-->
+                                <div class="me-n2">
+                                    <!--begin::Action-->
+                                    <a href="#" class="btn btn-icon btn-sm btn-active-color-primary mt-n2" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-start" data-kt-menu-overflow="true">
+                                        <div class="symbol symbol-40px me-5">
+                                            {% with 'assets/media/svg/avatars/blank.svg' as default_avatar %}
+                                                {% if request.user.is_authenticated and request.user.foto_perfil %}
+                                                <img src="{{ request.user.foto_perfil.url }}" alt="{{ request.user.username }}">
+                                                {% else %}
+                                                <img src="{% static default_avatar %}" alt="Avatar padrão">
+                                                {% endif %}
+                                            {% endwith %}
+                                        </div>
+                                    </a>
+
+                                    <!--begin::User account menu-->
+                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-275px" data-kt-menu="true">
+                                        <!--begin::Menu item-->
+                                        <div class="menu-item px-3">
+                                            <div class="menu-content d-flex align-items-center px-3">
+                                                <!--begin::Avatar-->
+                                                <div class="symbol symbol-50px me-5">
+                                                    {% with 'assets/media/svg/avatars/blank.svg' as default_avatar %}
+                                                        {% if request.user.is_authenticated and request.user.foto_perfil %}
+                                                        <img src="{{ request.user.foto_perfil.url }}" alt="{{ request.user.username }}">
+                                                        {% else %}
+                                                        <img src="{% static default_avatar %}" alt="Avatar padrão">
+                                                        {% endif %}
+                                                    {% endwith %}
+                                                </div>
+                                                <!--end::Avatar-->
+
+                                                <!--begin::Username-->
+                                                <div class="d-flex flex-column">
+                                                    <div class="fw-bold d-flex align-items-center fs-5">
+                                                        {% if request.user.is_authenticated %}
+                                                            {{ request.user.first_name }} {{ request.user.last_name }}
+                                                        {% else %}
+                                                            Visitante
+                                                        {% endif %}
+                                                    </div>
+
+                                                    <a href="{% if request.user.is_authenticated and request.user.email %}mailto:{{ request.user.email}}{% endif %}" class="fw-semibold text-muted text-hover-primary fs-7">
+                                                        {% if request.user.is_authenticated and request.user.email %}
+                                                            {{ request.user.email }}
+                                                        {% else %}
+                                                            Usuário não cadastrado!
+                                                        {% endif %}
+                                                    </a>
+                                                </div>
+                                                <!--end::Username-->
+                                            </div>
+                                        </div>
+                                        <!--end::Menu item-->
+
+                                        <!--begin::Menu separator-->
+                                        <div class="separator my-2"></div>
+                                        <!--end::Menu separator-->
+                                        {% if request.user.is_superuser %}
+                                        <!--begin::Menu item-->
+                                        <div class="menu-item px-5">
+                                            <a href="{% url 'add_local' %}" class="btn btn-sm w-100 btn-light text-start btn-active-color-primary">
+                                                Adicionar Locias
+                                            </a>
+                                        </div>
+                                        <!--end::Menu item-->
+                                        {% endif %}
+
+                                         <!--begin::Menu item-->
+                                        <div class="menu-item px-5">
+                                            <a href="{% url 'usuario' request.user.id %}" class="btn btn-sm w-100 btn-light text-start btn-active-color-primary">
+                                                Meu Perfil
+                                            </a>
+                                        </div>
+                                        <!--end::Menu item-->
+
+                                        <!--begin::Menu item-->
+                                        <form method="post" action="{% url 'logout' %}" class="menu-item px-5">
+                                            {% csrf_token %}
+                                            <button class="btn w-100 btn-sm btn-light-danger text-start">
+                                                Sair
+                                            </button>
+                                        </form>
+                                        <!--end::Menu item-->
+                                    </div>
+                                    <!--end::User account menu-->
+
+                                                    <!--end::Action-->
+                                                </div>
+                                <!--end::User menu-->
                         <!--end::Header wrapper-->
                         </div>
                     <!--end::Header container-->
@@ -150,20 +242,11 @@
                             <div class="app-container  container-xxl d-flex flex-column flex-md-row flex-center flex-md-stack py-3 ">
                                 <!--begin::Copyright-->
                                 <div class="text-gray-900 order-2 order-md-1">
-                                    <span class="text-muted fw-semibold me-1">2024©</span>
-                                    <a href="https://keenthemes.com" target="_blank" class="text-gray-800 text-hover-primary">Keenthemes</a>
+                                    <span class="text-muted fw-semibold me-1">2025©</span>
+                                    <a href="" target="_blank" class="text-gray-800 text-hover-primary">Descubra Belém</a>
                                 </div>
                                 <!--end::Copyright-->
 
-                                <!--begin::Menu-->
-                                <ul class="menu menu-gray-600 menu-hover-primary fw-semibold order-1">
-                                <li class="menu-item"><a href="https://keenthemes.com" target="_blank" class="menu-link px-2">About</a></li>
-
-                                <li class="menu-item"><a href="https://devs.keenthemes.com" target="_blank" class="menu-link px-2">Support</a></li>
-
-                                <li class="menu-item"><a href="https://1.envato.market/Vm7VRE" target="_blank" class="menu-link px-2">Purchase</a></li>
-                                </ul>
-                                <!--end::Menu-->
                             </div>
                             <!--end::Footer container-->
                         </div>

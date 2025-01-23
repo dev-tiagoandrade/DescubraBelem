@@ -1,0 +1,209 @@
+{% extends 'bases.html' %}
+{% load static %}
+{% load static %}
+{% block title %}Editar {{user.username}}{% endblock %}
+{% block style %}
+<style>
+    {% if user.foto_perfil %}
+    .image-input-empty {
+        background-image: url("{{ user.foto_perfil.url }}");
+    }
+
+    [data-bs-theme="dark"] .image-input-empty {
+        background-image: url("{{ user.foto_perfil.url }}");
+    }
+    {% else %}
+
+    .image-input-empty {
+        background-image: url("{% static 'assets/media/svg/avatars/blank.svg' %} ");
+    }
+    [data-bs-theme="dark"] .image-input-empty {
+        background-image: url("{% static 'assets/media/svg/avatars/blank-dark.svg' %} ");
+    }
+    {% endif %}
+
+</style>
+{% endblock %}
+{% block content %}
+<!--Título da Página-->
+<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
+    <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
+        <!--begin::Page title-->
+        <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+            <!--begin::Title-->
+            <h1 class="page-heading d-flex fw-bold fs-3 flex-column justify-content-center my-0">Adicionar Imóvel</h1>
+            <!--end::Title-->
+            <!--begin::Breadcrumb-->
+            <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+                <!--begin::Item-->
+                <li class="breadcrumb-item text-muted">
+                    <a href="index.html" class="text-muted text-hover-primary">Início</a>
+                </li>
+                <!--end::Item-->
+                <!--begin::Item-->
+                <li class="breadcrumb-item">
+                    <span class="bullet bg-gray-500 w-5px h-2px"></span>
+                </li>
+                <!--end::Item-->
+                <!--begin::Item-->
+                <li class="breadcrumb-item text-muted">
+                    Usuários
+                </li>
+                <!--end::Item-->
+            </ul>
+            <!--end::Breadcrumb-->
+        </div>
+        <!--end::Page title-->
+    </div>
+</div>
+<!--End Título-->
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-primary">
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <!-- FOTO DE PERFIL -->
+                {% if messages %}
+                <div class="card-body">
+                    {% for message in messages %}
+                    <div class="alert alert-danger alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- DADOS PESSOAIS -->
+                <div class="card-header">
+                    <h4 class="card-title">Dados Pessoais</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6  mb-10">
+                            <label for="id_first_name" class="form-label required">Nome</label>
+                            <input required type="text" name="first_name" placeholder="Ex. Carlos" id="id_first_name" class="form-control {% if form.first_name.errors %}is-invalid{% endif %} form-control-solid" value="{{ user.first_name|default:'' }}">
+                            {% if form.first_name.errors %}
+                                <div class="invalid-feedback">{{ form.first_name.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6  mb-10">
+                            <label for="id_last_name" class="form-label required">Sobrenome</label>
+                            <input required type="text" name="last_name" placeholder="Ex. da Silva Pereira" id="id_last_name" class="form-control {% if form.last_name.errors %}is-invalid{% endif %} form-control-solid" value="{{ user.last_name|default:'' }}">
+                            {% if form.last_name.errors %}
+                                <div class="invalid-feedback">{{ form.last_name.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 ">
+                            <label for="id_username" class="form-label required">Nome de Usuário</label>
+                            <input required type="text" name="username"  {% if not request.user.is_superuser %} readonly {% endif %} placeholder="Ex. carlos.silva" id="id_username" class="form-control {% if form.username.errors %}is-invalid{% endif %} form-control-solid" value="{{ user.username|default:'' }}">
+                            <div class="text-muted" data-kt-translate="sign-up-hint">
+                                Apenas letras maiúsculas e minúsculas, números &amp; os seguintes caracteres @/./+/-/_.
+                            </div>
+                            {% if form.username.errors %}
+                                <div class="invalid-feedback">{{ form.username.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DADOS DE CONTATO -->
+                <div class="card-header">
+                    <h4 class="card-title">Contato</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="form-group col-md-6">
+                            <label for="id_email" class="form-label required">Email</label>
+                            <input required type="email" name="email" id="id_email" class="form-control {% if form.email.errors %}is-invalid{% endif %} form-control-solid" value="{{ user.email|default:'' }}">
+                            {% if form.email.errors %}
+                                <div class="invalid-feedback">{{ form.email.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% if request.user.is_superuser %}
+                <!-- PERMISSÕES E GRUPOS -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="form-group col-md-6  mb-10">
+                            <label for="id_is_superuser" class="form-label">É Administrador Geral?</label>
+                            <select name="is_superuser" id="id_is_superuser" class="form-select form-select-solid">
+                                <option value="False" {% if not user.is_superuser %}selected{% endif %}>Não</option>
+                                <option value="True" {% if user.is_superuser %}selected{% endif %}>Sim</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <!-- BOTÕES -->
+                <div class="card-footer d-flex justify-content-between">
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                    <a href="{% url 'index' %}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</section>
+<!-- /.content -->
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+    $(document).ready(function () {
+        Inputmask({
+            "mask" : "999.999.999-99",
+            "placeholder": "***********"
+        }).mask("#id_cpf");
+
+         Inputmask({
+            "mask" : "(99) 99999-9999",
+            "placeholder": "***********"
+        }).mask("#id_telefone");
+    });
+</script>
+<script type="text/javascript">
+    function toggleAll(headerCheckbox, groupClass) {
+    const checkboxes = document.querySelectorAll(`.${groupClass}`);
+    checkboxes.forEach((checkbox) => {
+        checkbox.checked = headerCheckbox.checked;
+    });
+}
+
+function updateHeaderCheckbox(groupClass, headerCheckboxId) {
+    const checkboxes = document.querySelectorAll(`.${groupClass}`);
+    const headerCheckbox = document.getElementById(headerCheckboxId);
+
+    const allChecked = Array.from(checkboxes).every((checkbox) => checkbox.checked);
+    const noneChecked = Array.from(checkboxes).every((checkbox) => !checkbox.checked);
+
+    if (allChecked) {
+        headerCheckbox.indeterminate = false;
+        headerCheckbox.checked = true;
+    } else if (noneChecked) {
+        headerCheckbox.indeterminate = false;
+        headerCheckbox.checked = false;
+    } else {
+        headerCheckbox.indeterminate = true;
+    }
+}
+
+// Executar ao carregar a página
+document.addEventListener('DOMContentLoaded', () => {
+    const headerCheckboxes = document.querySelectorAll('[data-group]');
+    headerCheckboxes.forEach((headerCheckbox) => {
+        const groupClass = headerCheckbox.getAttribute('data-group');
+        const headerCheckboxId = headerCheckbox.id;
+
+        // Atualizar o estado do checkbox principal ao carregar
+        updateHeaderCheckbox(groupClass, headerCheckboxId);
+    });
+});
+
+</script>
+{% endblock %}

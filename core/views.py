@@ -4,11 +4,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.db.models import Q, Count
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.views.generic import *
 
 from core.forms import *
+
 
 class Login(LoginView):
     template_name = 'login.html'
@@ -24,22 +26,22 @@ class SingUpView(FormView):
     template_name = "singup.html"
     form_class = AddUsuarioForm
     success_url = reverse_lazy("index")
-
+    
     def form_valid(self, form):
         username = form.cleaned_data['username']
         email = form.cleaned_data['email']
         password = form.cleaned_data['password']
-
+        
         # Cria o usuário com a senha criptografada
         user = User.objects.create_user(username=username, email=email, password=password)
-
+        
         # Autentica e faz login do usuário automaticamente
         user = authenticate(username=username, password=password)
         if user is not None:
             login(self.request, user)
-
+        
         return super().form_valid(form)
-
+    
     def form_invalid(self, form):
         """
         Exibe mensagens de erro ao usuário.
@@ -124,7 +126,6 @@ class Categorias(LoginRequiredMixin, TemplateView):
                 ponto.is_favorito = ponto.favorito_set.filter(usuario=self.request.user).exists()
             
             pontos_por_categoria[nome] = sorted(pontos, key=lambda p: p.nome)
-            
         
         # Adicionar o dicionário ao contexto
         context['pontos_por_categoria'] = pontos_por_categoria
@@ -156,6 +157,7 @@ class FavoritarPonto(View):
             Favorito.objects.create(ponto_turistico=ponto, usuario=request.user)
             return JsonResponse({'message': 'Favoritado com sucesso'}, status=201)
 
+
 class Favoritos(LoginRequiredMixin, TemplateView):
     template_name = 'core/favoritos.html'
     
@@ -177,8 +179,9 @@ class Favoritos(LoginRequiredMixin, TemplateView):
         
         return context
 
+
 class AddLocal(FormView):
-    template_name = 'core/add_ponto_turistico.html'
+    template_name = 'core/add_local.html'
     form_class = AddLocalForm
     success_url = reverse_lazy('index')
     
@@ -195,5 +198,48 @@ class AddLocal(FormView):
         """
         Exibe mensagens de erro ao usuário.
         """
-        messages.error(self.request, "Houve um erro ao criar o Ponto Turístico. Por favor, corrija os campos destacados.")
+        messages.error(self.request,
+                       "Houve um erro ao criar o Ponto Turístico. Por favor, corrija os campos destacados.")
         return super().form_invalid(form)
+
+
+# Detalha um Usuário
+class DetailUsuario(LoginRequiredMixin, DetailView):
+    model = User
+    template_name = 'core/usuario.html'
+    context_object_name = 'usuario'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['delete'] = False
+        return context
+
+
+# Edita um usuário existente
+class EditUsuario(LoginRequiredMixin, UpdateView):
+    model = User
+    template_name = "core/edit-usuario.html"
+    form_class = EditUsuarioForm
+    success_url = reverse_lazy('index')
+    
+    def form_invalid(self, form):
+        """
+        Exibe mensagens de erro ao usuário.
+        """
+        messages.error(self.request, "Houve um erro ao atualizar o usuário. Por favor, corrija os campos destacados.")
+        return super().form_invalid(form)
+
+
+# Apaga um usuário existente
+class DeleteUsuario(LoginRequiredMixin, DeleteView):
+    model = User
+    template_name = 'core/usuario.html'
+    success_url = reverse_lazy('index')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        usuario = get_object_or_404(User, pk=self.kwargs['pk'])
+        context['is_current_user'] = usuario.id == self.request.user.id
+        context['delete'] = True
+        return context
+    
