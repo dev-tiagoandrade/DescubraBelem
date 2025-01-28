@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
-from django.db.models import Q, Count
+from django.db.models import Q, Count, F
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
@@ -97,9 +97,13 @@ class Index(LoginRequiredMixin, TemplateView):
     def post(self, request, *args, **kwargs):
         busca = request.POST.get('busca')
         if busca != "":
-            queryset = PontoTuristico.objects.filter(
+            queryset = PontoTuristico.objects.annotate(
+                nome_categoria=F('categoria')
+            ).filter(
                 Q(nome__icontains=busca) | Q(categoria__icontains=busca)
-            ).annotate(num_favoritos=Count('favorito')).order_by('-id')[:3]
+            ).annotate(
+                num_favoritos=Count('favorito')
+            ).order_by('-id')[:3]
             return render(request, self.template_name, {'pontos': queryset, 'busca': busca})
         return super().get(request, *args, **kwargs)
 

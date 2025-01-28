@@ -34,22 +34,22 @@ class CHOICE:
     )
     
     CATEGORIAS = (
-        (1, 'Praia'),
-        (2, 'Bar'),
-        (3, 'Museu'),
-        (4, 'Igreja'),
-        (5, 'Praça'),
-        (6, 'Mercado'),
-        (7, 'Teatro'),
-        (8, 'Parque'),
-        (9, 'Restaurante'),
-        (10, 'Café'),
-        (11, 'Feira'),
-        (12, 'Trilha'),
-        (13, 'Shopping'),
-        (14, 'Centro Cultural'),
-        (15, 'Espaço Público'),
-        (16, 'Rio')
+        ('Praia', 'Praia'),
+        ('Bar', 'Bar'),
+        ('Museu', 'Museu'),
+        ('Igreja', 'Igreja'),
+        ('Praça', 'Praça'),
+        ('Mercado', 'Mercado'),
+        ('Teatro', 'Teatro'),
+        ('Parque', 'Parque'),
+        ('Restaurante', 'Restaurante'),
+        ('Café', 'Café'),
+        ('Feira', 'Feira'),
+        ('Trilha', 'Trilha'),
+        ('Shopping', 'Shopping'),
+        ('Centro Cultural', 'Centro Cultural'),
+        ('Espaço Público', 'Espaço Público'),
+        ('Rio', 'Rio'),
     )
     
     CATEGORIAS_PLURAL = {
@@ -81,7 +81,8 @@ class PontoTuristico(models.Model):
         verbose_name="Nome do Ponto Turístico"
     )
     
-    categoria = models.PositiveIntegerField(
+    categoria = models.CharField(
+        max_length=50,
         choices=CHOICE.CATEGORIAS,
         verbose_name="Nome do Ponto Turístico"
     )
